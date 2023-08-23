@@ -3,8 +3,8 @@ from pathlib import Path
 class Dataset:
     def __init__(self, dataset_path):
         self.dataset_path = Path(dataset_path)
-        self.public_item_list = open(self.dataset_path / "pub.dat").read().splitlines()
-        self.private_item_list = open(self.dataset_path / "priv.dat").read().splitlines()
+        self.public_items = set(open(self.dataset_path / "pub.dat").read().split())
+        self.private_items = set(open(self.dataset_path / "priv.dat").read().split())
 
         self.transactions = self.build_transactions()
 
@@ -12,10 +12,12 @@ class Dataset:
         self.moles = None
         self.minimal_moles = dict()
 
+
     def build_transactions(self):
+        public_list = open(self.dataset_path / "pub.dat").read().splitlines()
+        private_list = open(self.dataset_path / "priv.dat").read().splitlines()
         transactions = []
-        for row in range(len(self.private_item_list)):
-            transaction = self.public_item_list[row] + " " + self.private_item_list[row]
-            transactions.append(transaction)
+        for idx in range(0,len(public_list)):
+            transactions.append(public_list[idx] + " " + private_list[idx])
         return transactions
 
