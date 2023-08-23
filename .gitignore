@@ -8,5 +8,6 @@
 /dataSources.local.xml
 .DS_Store
 /.DS_Store
-/Datasets!/.idea/
-!/Datasets/
+!/Datasets/priv.dat
+!/Datasets/pub.dat
+!/.idea/

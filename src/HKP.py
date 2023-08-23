@@ -16,7 +16,8 @@ class HKP:
                 sup+=1
         if sup > self.k:
             return True
-        return False
+        else:
+            return False
 
     def calculate_breach(beta :set, dataset :Dataset):
         for el in beta:

@@ -16,8 +16,7 @@ class Dataset:
     def build_transactions(self):
         public_list = open(self.dataset_path / "pub.dat").read().splitlines()
         private_list = open(self.dataset_path / "priv.dat").read().splitlines()
-        transactions = []
-        for idx in range(0,len(public_list)):
-            transactions.append(public_list[idx] + " " + private_list[idx])
+        transactions = [(public_line.split() + private_line.split()) for public_line, private_line in
+                            zip(public_list, private_list)]
         return transactions
 

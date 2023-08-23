@@ -5,9 +5,9 @@ from typing import Set
 
 if __name__ == '__main__':
     print("test:")
-    ds = Dataset("Datasets")
+    ds = Dataset("../Datasets")
     print("Transactions")
     print(ds.transactions[0])
 
     hkp = HKP(0,2,0.8)
-    print(hkp.calculate_and_check_sup_greater([292,82], ds))
+    print(hkp.calculate_and_check_sup_greater(['126','70'], ds))
