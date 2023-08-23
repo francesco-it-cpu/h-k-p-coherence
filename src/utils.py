@@ -6,5 +6,6 @@ from Dataset import Dataset
 
 if __name__ == '__main__':
     #print(read_datasets('../Datasets/pub.dat', './Datasets/priv.dat'))
+    print("test:")
     ds = Dataset("Datasets")
-    print(ds.transactions)
+    print(ds.public_item_list)
