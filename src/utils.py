@@ -5,4 +5,4 @@ def read_datasets(pub_path,priv_path):
     return [pub,priv]
 
 if __name__ == '__main__':
-    print(read_datasets('./Datasets/pub.dat','./Datasets/priv.dat'))
+    print(read_datasets('../Datasets/pub.dat', './Datasets/priv.dat'))
