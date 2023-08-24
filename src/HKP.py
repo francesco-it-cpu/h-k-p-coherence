@@ -10,6 +10,12 @@ class HKP:
         self.p = p
 
     def calculate_sup(self, beta, dataset :Dataset):
+        """
+        Calculates the Support of Beta
+        :param beta: possible mole
+        :param dataset: dataset
+        :return: support of Beta
+        """
         sup = 0
         beta = set(beta)
         for row in dataset.transactions:
@@ -18,6 +24,14 @@ class HKP:
         return sup
 
     def calculate_p_breach_size1moles(self, dataset):
+        """
+        Calculate the Support of Beta Union e (private item)
+        :param dataset: dataset
+        :return: Two dictionaries :
+                 SupBeta_dict : A dictionary,[key: each public_items, value: occurrencies], containing the support of all public items
+                 SupBeta_U_e_dict : A dictionary of dictionaries
+                 [key: each pub_item : {key : private_item, value: occurrencies of pub_item together with priv_item}
+        """
         SupBeta_U_e_dict = {}
         SupBeta_dict = {}
         for beta in dataset.public_items:
@@ -35,6 +49,14 @@ class HKP:
 
 
     def calculate_p_breach_sizeNmoles(self, dataset):
+        """
+        Calculate the Support of Beta Union e (private item) for size N moles
+        :param dataset: dataset
+        :return: Two dictionaries :
+                 SupBeta_dict : A dictionary,[key: each public_items, value: occurrencies], containing the support of all combos of public items
+                 SupBeta_U_e_dict : A dictionary of dictionaries
+                 [key: each combo of pub_items : {key : private_item, value: occurrencies of combos of pub_items together with priv_item}
+        """
         SupBeta_U_e_dict = {}
         SupBeta_dict = {}
         possible_moles = self.create_combos(dataset.public_items)
@@ -54,6 +76,11 @@ class HKP:
 
 
     def create_combos(self,public_items):
+        """
+        Create the set of all possible size-p moles
+        :param public_items: list of public items
+        :return: A set of possible moles
+        """
         possible_moles = []
         p = 2
         while p <= self.p:
@@ -66,6 +93,11 @@ class HKP:
         return set(possible_moles)
 
     def get_moles(self,dataset):
+        """
+        Find moles based on the condition explained in the paper (either Sup(β)<k or Pbreach(β)>h)
+        :param dataset: dataset
+        :return: list of moles and non moles
+        """
         moles = []
         non_moles = []
         [SupBeta_dict,SupBeta_U_e_dict] = self.calculate_p_breach_sizeNmoles(dataset)

@@ -18,6 +18,10 @@ class Dataset:
 
 
     def build_transactions(self):
+        """
+        Build transactions by reading each line of pub.dat and priv.dat
+        :return: A set of transactions
+        """
         public_list = open(self.dataset_path / "pub.dat").read().splitlines()
         private_list = open(self.dataset_path / "priv.dat").read().splitlines()
         transactions = [set(
