@@ -10,7 +10,7 @@ if __name__ == '__main__':
     hkp = HKP(0.8,2,2)
 
     [moles,non_moles] = hkp.get_moles(dataset=ds)
-    print(f"Size-{hkp.p} moles")
+    print(f"Size-{hkp.p} moless")
 
 
 
