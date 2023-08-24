@@ -19,13 +19,13 @@ print(f"Generating pub.dat with {args.row} rows and {pub_cols} columns")
 # Generate random numbers between 1 and 300 for public and private datasets
 public_data = np.random.randint(low=1, high=300, size=(args.row, pub_cols))
 print(f"Generating priv.dat with {args.row} rows and {priv_cols} columns")
-private_data = np.random.randint(low=1, high=300, size=(args.row, priv_cols))
+private_data = np.random.randint(low=400, high=600, size=(args.row, priv_cols))
 
 # Create pandas dataframes for public and private datasets
 public_df = pd.DataFrame(public_data)
 private_df = pd.DataFrame(private_data)
 
 # Print the dataframes
-public_df.to_csv(f"../Datasets/pub.dat",sep=' ',index=False, header=False)
-private_df.to_csv(f"../Datasets/priv.dat",sep=' ',index=False, header=False)
+public_df.to_csv(f"./Datasets/pub.dat",sep=' ',index=False, header=False)
+private_df.to_csv(f"./Datasets/priv.dat",sep=' ',index=False, header=False)
 print("\nWrote everything to Datasets folder")

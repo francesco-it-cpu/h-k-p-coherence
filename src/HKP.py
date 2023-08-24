@@ -1,5 +1,6 @@
 from Dataset import Dataset
-from typing import Set
+from collections import defaultdict
+from itertools import combinations
 
 class HKP:
 
@@ -8,22 +9,74 @@ class HKP:
         self.k = k
         self.p = p
 
-    def calculate_and_check_sup_greater(self, beta, dataset :Dataset):
-        beta = set(beta)
+    def calculate_sup(self, beta, dataset :Dataset):
         sup = 0
+        beta = set(beta)
         for row in dataset.transactions:
-            if beta.issubset(set(row)):
+            if beta.issubset(set(row)) :
                 sup+=1
-        if sup > self.k:
-            return True
-        else:
-            return False
+        return sup
 
-    def calculate_breach(beta :set, dataset :Dataset):
-        for el in beta:
-            for row in dataset.transactions:
-                for beta in dataset.public_item_list:
-                    if beta.issubset(row): 
-                            return                       
-    
-   
+    def calculate_p_breach_size1moles(self, dataset):
+        SupBeta_U_e_dict = {}
+        SupBeta_dict = {}
+        for beta in dataset.public_items:
+            SupBeta_U_e_dict[beta] = defaultdict(int)
+            SupBeta_dict[beta] = self.calculate_sup([beta],dataset)
+
+        for row in dataset.transactions:
+            for beta in dataset.public_items:
+                if beta in row:
+                    for priv_item in dataset.private_items:
+                        if priv_item in row:
+                            SupBeta_U_e_dict[beta][priv_item] += 1
+
+        return SupBeta_dict,SupBeta_U_e_dict
+
+
+    def calculate_p_breach_sizeNmoles(self, dataset):
+        SupBeta_U_e_dict = {}
+        SupBeta_dict = {}
+        possible_moles = self.create_combos(dataset.public_items)
+        for _beta in possible_moles:
+            SupBeta_U_e_dict[_beta] = defaultdict(int)
+            SupBeta_dict[_beta] = self.calculate_sup(_beta,dataset)
+
+        for row in dataset.transactions:
+            for beta in possible_moles:
+                if set(beta).issubset(row):
+                    for priv_item in dataset.private_items:
+                        if priv_item in row:
+                            SupBeta_U_e_dict[beta][priv_item] += 1
+
+        return SupBeta_dict,SupBeta_U_e_dict
+
+
+
+    def create_combos(self,public_items):
+        possible_moles = []
+        p = 2
+        while p <= self.p:
+            # Generate all combinations of different lengths
+            for r in range(1, len(public_items) + 1):
+                for combo in combinations(public_items, p):
+                    possible_moles.append(combo)
+            p += 1
+
+        return set(possible_moles)
+
+    def get_moles(self,dataset):
+        moles = []
+        non_moles = []
+        [SupBeta_dict,SupBeta_U_e_dict] = self.calculate_p_breach_sizeNmoles(dataset)
+        for pairs in zip(SupBeta_dict,SupBeta_U_e_dict.values()):
+            beta = pairs[0]
+            sup_Beta = SupBeta_dict[beta]
+            sup_Beta_U_e = max(pairs[1].values())
+            p_breach = sup_Beta_U_e / sup_Beta
+            if sup_Beta < self.k or p_breach > self.h:
+                moles.append(beta)
+            else:
+                non_moles.append(beta)
+
+        return moles,non_moles
