@@ -208,18 +208,17 @@ class HKP:
 
         i = 2
 
-        while i <= self.p and F_i != set():
-            C_i = self.create_combos(i,F_i)
-            if i == 2:
-                M[i] = C_i
-                print(f"Found {len(M[i])} size-{i} moles")
+        while i <= self.p:
+            if F_i == set([]):
+                print(f"No size-{i} moles found\n")
+                break
             else:
+                C_i = self.create_combos(i,F_i)
                 M_i,F_i = self.get_moles(C_i,M)
                 M[i] = M_i
-                print(f"Found {len(M[i])} size-{i} moles")
-
-            F_i = C_i
-            i+=1
+                # TODO: Print da aggiustare quando F_i é vuoto
+                print(f"Found {len(M[i])} size-{i} moles\n {M_i}\n")
+                i+=1
 
         return M,F
 
