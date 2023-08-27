@@ -7,22 +7,16 @@ import logging
 if __name__ == '__main__':
 
     logging.basicConfig(level=logging.DEBUG)
-    ds = Dataset("../Datasets/Paper Example")
+    ds = Dataset("../Datasets/")
 
 
-    hkp = HKP(0.8,2,2)
-
-    logging.debug('Searching size 1 moles...')
-    size_1_moles = hkp.get_size1_moles(ds)
-    cleaned_ds = hkp.eliminate_size_1_moles(ds,size_1_moles)
-    logging.info(f"Size-1 moles: {size_1_moles}\n ")
-    [moles,non_moles] = hkp.get_moles(ds)
+    hkp = HKP(0.4,2,3,ds)
+    start = time.time()
+    minimal_moles,non_moles = hkp.find_minimal_moles()
+    end = time.time()
+    print(f"Found these minimal moles {minimal_moles.values()} in {end-start} s")
 
 
-
-    #logging.info(f"Cleaned dataset: {cleaned_ds}\n ")
-
-    logging.info(f"Size-{hkp.p} moles: {moles}\n")
 
 
 
