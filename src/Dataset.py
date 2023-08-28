@@ -10,7 +10,7 @@ class Dataset:
         priv_items = open(self.dataset_path / "priv.dat").read().split()
         self.private_items = frozenset(int(item) for item in priv_items)
 
-        [self.transactions,self.public_transaction] = self.build_transactions()
+        self.transactions,self.public_transactions,self.private_transactions = self.build_transactions()
 
         self.size_one_moles = list()
         self.minimal_moles = dict()
@@ -24,12 +24,11 @@ class Dataset:
         public_list = open(self.dataset_path / "pub.dat").read().splitlines()
         private_list = open(self.dataset_path / "priv.dat").read().splitlines()
 
-        pub_transaction = [frozenset([int(public_element) for public_element in public_line.split()]) for public_line in public_list]
+        pub_transactions = [frozenset([int(public_element) for public_element in public_line.split()]) for public_line in public_list]
+        priv_transactions = [frozenset([int(private_element) for private_element in private_line.split()]) for private_line in
+                           private_list]
 
-        transactions = [frozenset(
-            [int(public_element) for public_element in public_line.split()] +
-            [int(private_element) for private_element in private_line.split()])
-            for public_line, private_line in zip(public_list, private_list)
-        ]
-        return transactions,pub_transaction
+        transactions = [pub_tr.union(priv_tr) for pub_tr,priv_tr in zip(pub_transactions, priv_transactions)]
+
+        return transactions,pub_transactions,priv_transactions
 

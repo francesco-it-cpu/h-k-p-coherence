@@ -9,7 +9,7 @@ class HKP:
         self.k = k
         self.p = p
         self.dataset = dataset
-
+        self.il = dict()
 
 
     # ------------ Size-1 moles functions --------------
@@ -53,6 +53,7 @@ class HKP:
                         if priv_item in row:
                             SupBeta_U_e_dict[beta][priv_item] += 1
 
+        self.il = SupBeta_dict
         return SupBeta_dict,SupBeta_U_e_dict
 
     def get_size1_moles(self):
@@ -86,7 +87,7 @@ class HKP:
         without_size1_moles = []
         item_to_clean_from_transaction = []
 
-        for row in self.dataset.transactions:
+        for row in self.dataset.public_transactions:
             for el in size_1_moles_list:
                 if set([el]).issubset(row):
                     item_to_clean_from_transaction.append(el)
@@ -98,7 +99,8 @@ class HKP:
 
         cleaned_pub_items = self.dataset.public_items.symmetric_difference(frozenset(size_1_moles_list))
         self.dataset.public_items = cleaned_pub_items
-        self.dataset.transactions = without_size1_moles
+        self.dataset.public_transactions = without_size1_moles
+        self.dataset.transactions = [pub_trans.union(priv_trans) for pub_trans,priv_trans in zip(without_size1_moles,self.dataset.private_transactions)]
 
         return cleaned_pub_items
 
@@ -114,7 +116,7 @@ class HKP:
         :return: support of Beta
         """
         sup = 0
-        for row in self.dataset.transactions:
+        for row in self.dataset.public_transactions:
             if beta.issubset(row) :
                 sup+=1
         return sup
@@ -256,20 +258,32 @@ class HKP:
     def suppress_MM(self,minimal_moles:dict):
 
         without_MM = []
-        item_to_clean_from_transaction = set()
+        item_to_clean_from_transaction = []
 
-        for row in self.dataset.public_transaction:
+        for row in self.dataset.public_transactions:
             for p,moles in minimal_moles.items():
                 for mole in moles:
-                    if mole.issubset(row):
-                        item_to_clean_from_transaction.add(mole)
+                    for el in mole:
+                        if set([el]).issubset(row):
+                            item_to_clean_from_transaction.append(el)
 
-            cleaned_row = row.symmetric_difference(item_to_clean_from_transaction)
+
+            cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
             without_MM.append(cleaned_row)
             item_to_clean_from_transaction.clear()
 
-        cleaned_pub_items = self.dataset.public_items.symmetric_difference(frozenset(minimal_moles))
-        self.dataset.public_items = cleaned_pub_items
-        self.dataset.transactions = without_MM
+        for pub_trans, priv_trans in zip(without_MM, self.dataset.private_transactions):
+            pub_trans.union(priv_trans)
 
-        return cleaned_pub_items
+        return without_MM
+
+
+    def get_IL(self):
+
+        dict_IL = defaultdict(int)
+
+        for item in self.dataset.public_transactions:
+            sup = self.calculate_sup_size1_moles(item)
+            dict_IL[item] = sup
+
+        return dict_IL
