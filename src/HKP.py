@@ -99,7 +99,7 @@ class HKP:
         cleaned_pub_items = self.dataset.public_items.symmetric_difference(frozenset(size_1_moles_list))
         self.dataset.public_items = cleaned_pub_items
         self.dataset.public_transactions = without_size1_moles
-        self.dataset.transactions = [pub_trans.union(priv_trans) for pub_trans,priv_trans in zip(without_size1_moles,self.dataset.private_transactions)]
+        self.dataset.transactions = [pub_trans.union(priv_trans) for pub_trans,priv_trans in zip(without_size1_moles,self.dataset.private_transactions) if pub_trans!=frozenset()]
 
         return cleaned_pub_items
 
@@ -271,10 +271,8 @@ class HKP:
             without_MM.append(cleaned_row)
             item_to_clean_from_transaction.clear()
 
-        for pub_trans, priv_trans in zip(without_MM, self.dataset.private_transactions):
-            pub_trans.union(priv_trans)
+        self.dataset.transactions = [pub_trans.union(priv_trans) for pub_trans,priv_trans in zip(without_MM,self.dataset.private_transactions)]
 
-        return without_MM
 
     def IL(self):
         dict_IL=defaultdict(int)
@@ -283,3 +281,43 @@ class HKP:
                 dict_IL[el]=self.calculate_sup_size1_moles(el)
 
         return dict_IL
+
+
+    def morte(self,IL,MM,minimal_moles):
+
+        division=defaultdict(int)
+        single_mole=set()
+        for p,item in minimal_moles.items():
+            for minimal in item:
+                for el in minimal:
+                    single_mole.add(el)
+
+        for _item in single_mole:
+            division[_item]= MM[_item]/IL[_item]
+
+        # Get half of the elements or just one element if there's only one
+        sorted_division = sorted(division.items(), key=lambda x: x[1], reverse=True)
+        num_elements = len(sorted_division)
+
+        if num_elements == 1:
+            selected_elements = [sorted_division[0][0]]  # Only one element
+        else:
+            selected_elements = [key for key, _ in sorted_division[:num_elements // 2]]
+
+        cleaned_pub_items = self.eliminate_size_1_moles(selected_elements)
+
+        """
+         # Get the top 10 elements or all elements if there are fewer than 10
+        sorted_division = sorted(division.items(), key=lambda x: x[1], reverse=True)
+        top_10_elements = [key for key, _ in sorted_division[:10]]
+        cleaned_pub_items = self.eliminate_size_1_moles(top_10_elements)
+        """
+
+        """
+        # Get only the Max element
+        max_value=max(division.values())
+        keys_with_max_value = [key for key, value in division.items() if value == max_value]
+        cleaned_pub_items=self.eliminate_size_1_moles(keys_with_max_value)
+        """
+
+        return selected_elements, cleaned_pub_items
