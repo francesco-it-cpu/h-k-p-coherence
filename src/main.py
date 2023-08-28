@@ -10,14 +10,12 @@ if __name__ == '__main__':
     ds = Dataset("../Datasets/Paper Example")
 
 
-    hkp = HKP(0.8,2,3,ds)
+    hkp = HKP(0.8,2,2,ds)
     start = time.time()
     minimal_moles,non_moles,MM = hkp.find_minimal_moles()
-    prova = hkp.get_IL()
-    print(prova)
-
-
-
+    IL = hkp.IL()
+    print(f"IL is {IL}\nMM is {MM}")
+    end=time.time()
     print(f"Total time {end-start} s")
 
 

@@ -9,7 +9,6 @@ class HKP:
         self.k = k
         self.p = p
         self.dataset = dataset
-        self.il = dict()
 
 
     # ------------ Size-1 moles functions --------------
@@ -277,13 +276,10 @@ class HKP:
 
         return without_MM
 
-
-    def get_IL(self):
-
-        dict_IL = defaultdict(int)
-
+    def IL(self):
+        dict_IL=defaultdict(int)
         for item in self.dataset.public_transactions:
-            sup = self.calculate_sup_size1_moles(item)
-            dict_IL[item] = sup
+            for el in item:
+                dict_IL[el]=self.calculate_sup_size1_moles(el)
 
         return dict_IL
