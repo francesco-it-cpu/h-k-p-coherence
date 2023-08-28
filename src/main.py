@@ -10,7 +10,7 @@ if __name__ == '__main__':
     ds = Dataset("../Datasets/")
 
 
-    hkp = HKP(0.8,2,4,ds)
+    hkp = HKP(0.4,2,3,ds)
     start = time.time()
     minimal_moles,non_moles = hkp.find_minimal_moles()
     end = time.time()
