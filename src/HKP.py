@@ -197,6 +197,8 @@ class HKP:
 
         M = dict()
         F = dict()
+        MM = defaultdict(int)
+
 
         i = 1
         print(f"Searching for size-1 moles...")
@@ -217,6 +219,14 @@ class HKP:
                 M_i,F_i = self.get_moles(C_i,M)
                 M[i] = M_i
 
+
+                # --------  Update the elements_in_moles dictionary for size-1 moles
+
+                for mole in M_i:
+                    for element in mole:
+                        MM[element] = MM.get(element, 0) + 1
+
+                # ------------------------------------------------------------------
                 if M_i == set():
                     print(f"No size-{i} moles found\n")
                     break
@@ -224,6 +234,42 @@ class HKP:
                 print(f"Found {len(M[i])} size-{i} moles\n {M_i}\n")
                 i+=1
 
-        return M,F
+        return M,F,MM
 
+    """
+    def calculate_MM(self, minimal_moles):
 
+        MM = {}
+
+        for item in minimal_moles.values():
+            for minimal in item:
+                for el in minimal:
+                    MM.setdefault(el, 0)
+
+        for p, item in minimal_moles.items():
+            for minimal in item:
+                for el in minimal:
+                    MM[el] += 1
+        return MM
+
+    """
+    def suppress_MM(self,minimal_moles:dict):
+
+        without_MM = []
+        item_to_clean_from_transaction = set()
+
+        for row in self.dataset.public_transaction:
+            for p,moles in minimal_moles.items():
+                for mole in moles:
+                    if mole.issubset(row):
+                        item_to_clean_from_transaction.add(mole)
+
+            cleaned_row = row.symmetric_difference(item_to_clean_from_transaction)
+            without_MM.append(cleaned_row)
+            item_to_clean_from_transaction.clear()
+
+        cleaned_pub_items = self.dataset.public_items.symmetric_difference(frozenset(minimal_moles))
+        self.dataset.public_items = cleaned_pub_items
+        self.dataset.transactions = without_MM
+
+        return cleaned_pub_items
