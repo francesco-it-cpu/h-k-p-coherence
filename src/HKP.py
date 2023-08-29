@@ -194,7 +194,7 @@ class HKP:
 
     # ------------ Size-n moles functions ending --------------
 
-    def find_minimal_moles(self,size_1_moles=None):
+    def find_minimal_moles(self):
 
         M = dict()
         F = dict()
@@ -202,7 +202,7 @@ class HKP:
 
 
         i = 1
-
+        size_1_moles = self.get_size1_moles()
         F_i = self.eliminate_size_1_moles(size_1_moles)
         F[i] = F_i
 
@@ -251,27 +251,67 @@ class HKP:
         return MM
 
     """
-    def suppress_MM(self,minimal_moles:dict):
-
-        without_MM = []
-        item_to_clean_from_transaction = []
-
-        for row in self.dataset.public_transactions:
-            for p,moles in minimal_moles.items():
-                for mole in moles:
-                    for el in mole:
-                        if set([el]).issubset(row) and el not in item_to_clean_from_transaction:
-                            item_to_clean_from_transaction.append(el)
+    def suppress_MM(self,minimal_moles:dict, args,IL=None,MM=None ):
 
 
-            cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
-            without_MM.append(cleaned_row)
-            item_to_clean_from_transaction.clear()
+        match args.technique:
+            case 'suppress-all':
+                without_MM = []
+                item_to_clean_from_transaction = []
+
+                for row in self.dataset.public_transactions:
+                    for p,moles in minimal_moles.items():
+                        for mole in moles:
+                            for el in mole:
+                                if set([el]).issubset(row) and el not in item_to_clean_from_transaction:
+                                    item_to_clean_from_transaction.append(el)
 
 
-        return [[pub_trans for pub_trans in without_MM if pub_trans != frozenset()],
-                 [priv_trans for idx,priv_trans in enumerate(self.dataset.private_transactions)
-                  if without_MM[idx] != frozenset()]]
+                    cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
+                    without_MM.append(cleaned_row)
+                    item_to_clean_from_transaction.clear()
+                    self.dataset.public_transactions=[pub_trans for pub_trans in without_MM if pub_trans != frozenset()]
+                    self.dataset.private_transactions=[priv_trans for idx, priv_trans in enumerate(self.dataset.private_transactions)
+                             if without_MM[idx] != frozenset()]
+
+            case 'half':
+
+                division=self.prepare_data(minimal_moles,MM,IL)
+                # Get half of the elements or just one element if there's only one
+                sorted_division = sorted(division.items(), key=lambda x: x[1], reverse=True)
+                num_elements = len(sorted_division)
+
+                if num_elements == 1:
+                    selected_elements = [sorted_division[0][0]]  # Only one element
+                else:
+                    selected_elements = [key for key, _ in sorted_division[:num_elements // 2]]
+
+                cleaned_pub_items = self.eliminate_size_1_moles(selected_elements)
+
+                return selected_elements
+
+            case 'top-10':
+
+                division = self.prepare_data(minimal_moles, MM, IL)
+                 # Get the top 10 elements or all elements if there are fewer than 10
+                sorted_division = sorted(division.items(), key=lambda x: x[1], reverse=True)
+                top_10_elements = [key for key, _ in sorted_division[:10]]
+                cleaned_pub_items = self.eliminate_size_1_moles(top_10_elements)
+
+                return top_10_elements
+
+            case 'only-max':
+                division = self.prepare_data(minimal_moles, MM, IL)
+                # Get only the Max element
+                max_value=max(division.values())
+                keys_with_max_value = [key for key, value in division.items() if value == max_value]
+                cleaned_pub_items=self.eliminate_size_1_moles(keys_with_max_value)
+
+                return keys_with_max_value
+
+            case _:
+                print(f"Invalid option selected! {technique}")
+                exit()
 
 
     def IL(self):
@@ -321,3 +361,16 @@ class HKP:
         """
 
         return selected_elements, cleaned_pub_items
+
+    def prepare_data(self,minimal_moles,MM,IL):
+        division = defaultdict(int)
+        single_mole = set()
+        for p, item in minimal_moles.items():
+            for minimal in item:
+                for el in minimal:
+                    single_mole.add(el)
+
+        for _item in single_mole:
+            division[_item] = MM[_item] / IL[_item]
+
+        return division
