@@ -93,14 +93,14 @@ class HKP:
 
             if row.symmetric_difference(set(item_to_clean_from_transaction)) != frozenset():
                 cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
-
-            without_size1_moles.append(cleaned_row)
+                without_size1_moles.append(cleaned_row)
             item_to_clean_from_transaction.clear()
 
-        cleaned_pub_items = self.dataset.public_items.symmetric_difference(
-            frozenset(size_1_moles_list)) if self.dataset.public_items.symmetric_difference(
-            frozenset(size_1_moles_list)) != frozenset() else None
-        self.dataset.public_items = cleaned_pub_items
+        symmetric_diff = self.dataset.public_items.symmetric_difference(frozenset(size_1_moles_list))
+        cleaned_pub_items = symmetric_diff if symmetric_diff != frozenset() else None
+
+        if cleaned_pub_items is not None:
+            self.dataset.public_items = cleaned_pub_items
         self.dataset.public_transactions = without_size1_moles
         self.dataset.transactions = [pub_trans.union(priv_trans) for pub_trans,priv_trans in zip(without_size1_moles,self.dataset.private_transactions) if pub_trans!=frozenset()]
 
@@ -230,7 +230,7 @@ class HKP:
 
                 # ------------------------------------------------------------------
                 if M_i == set():
-                    print(f"No size-{i} moles found\n")
+                    print(f"NO size-{i} moles found\n")
                     break
 
                 print(f"Found {len(M[i])} size-{i} moles\n")
@@ -238,67 +238,69 @@ class HKP:
 
         return M,F,MM
 
-    def suppress_MM(self,minimal_moles:dict, m,IL=None,MM=None ):
+    def suppress_MM(self,minimal_moles:dict, m=None,top_x=None,IL=None,MM=None ):
+
+        if m is None and top_x is not None:
+            division = self.prepare_data(minimal_moles, MM, IL)
+            # Verify if top_x choosen is greater than len of division
+            if top_x > len(division):
+                top_x = len(division)  # set top_x to the len of division
+            # Get the top 10 elements or all elements if there are fewer than 10
+            sorted_division = sorted(division.items(), key=lambda x: x[1], reverse=True)
+            top_x_elements = [key for key, _ in sorted_division[:top_x]]
+            self.eliminate_size_1_moles(top_x_elements)
+
+            return top_x_elements
+
+        else:
+            match m:
+                case 'suppress-all':
+                    without_MM = []
+                    item_to_clean_from_transaction = []
+
+                    for row in self.dataset.public_transactions:
+                        for p,moles in minimal_moles.items():
+                            for mole in moles:
+                                for el in mole:
+                                    if set([el]).issubset(row) and el not in item_to_clean_from_transaction:
+                                        item_to_clean_from_transaction.append(el)
 
 
-        match m:
-            case 'suppress-all':
-                without_MM = []
-                item_to_clean_from_transaction = []
+                        cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
+                        without_MM.append(cleaned_row)
+                        item_to_clean_from_transaction.clear()
+                    self.dataset.public_transactions=[pub_trans for pub_trans in without_MM if pub_trans != frozenset()]
+                    self.dataset.private_transactions=[priv_trans for idx, priv_trans in enumerate(self.dataset.private_transactions)
+                                 if without_MM[idx] != frozenset()]
 
-                for row in self.dataset.public_transactions:
-                    for p,moles in minimal_moles.items():
-                        for mole in moles:
-                            for el in mole:
-                                if set([el]).issubset(row) and el not in item_to_clean_from_transaction:
-                                    item_to_clean_from_transaction.append(el)
+                case 'half':
 
+                    division=self.prepare_data(minimal_moles,MM,IL)
+                    # Get half of the elements or just one element if there's only one
+                    sorted_division = sorted(division.items(), key=lambda x: x[1], reverse=True)
+                    num_elements = len(sorted_division)
 
-                    cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
-                    without_MM.append(cleaned_row)
-                    item_to_clean_from_transaction.clear()
-                self.dataset.public_transactions=[pub_trans for pub_trans in without_MM if pub_trans != frozenset()]
-                self.dataset.private_transactions=[priv_trans for idx, priv_trans in enumerate(self.dataset.private_transactions)
-                             if without_MM[idx] != frozenset()]
+                    if num_elements == 1:
+                        selected_elements = [sorted_division[0][0]]  # Only one element
+                    else:
+                        selected_elements = [key for key, _ in sorted_division[:num_elements // 2]]
 
-            case 'half':
+                    self.eliminate_size_1_moles(selected_elements)
 
-                division=self.prepare_data(minimal_moles,MM,IL)
-                # Get half of the elements or just one element if there's only one
-                sorted_division = sorted(division.items(), key=lambda x: x[1], reverse=True)
-                num_elements = len(sorted_division)
+                    return selected_elements
 
-                if num_elements == 1:
-                    selected_elements = [sorted_division[0][0]]  # Only one element
-                else:
-                    selected_elements = [key for key, _ in sorted_division[:num_elements // 2]]
+                case 'only-max':
+                    division = self.prepare_data(minimal_moles, MM, IL)
+                    # Get only the Max element
+                    max_value=max(division.values())
+                    keys_with_max_value = [key for key, value in division.items() if value == max_value]
+                    self.eliminate_size_1_moles(keys_with_max_value)
 
-                self.eliminate_size_1_moles(selected_elements)
+                    return keys_with_max_value
 
-                return selected_elements
-
-            case 'top-10':
-
-                division = self.prepare_data(minimal_moles, MM, IL)
-                 # Get the top 10 elements or all elements if there are fewer than 10
-                sorted_division = sorted(division.items(), key=lambda x: x[1], reverse=True)
-                top_10_elements = [key for key, _ in sorted_division[:10]]
-                self.eliminate_size_1_moles(top_10_elements)
-
-                return top_10_elements
-
-            case 'only-max':
-                division = self.prepare_data(minimal_moles, MM, IL)
-                # Get only the Max element
-                max_value=max(division.values())
-                keys_with_max_value = [key for key, value in division.items() if value == max_value]
-                self.eliminate_size_1_moles(keys_with_max_value)
-
-                return keys_with_max_value
-
-            case _:
-                print(f"Invalid option selected! {m}")
-                exit()
+                case _:
+                    print(f"Invalid option selected! {m}")
+                    exit()
 
 
     def IL(self):
