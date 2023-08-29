@@ -238,23 +238,6 @@ class HKP:
 
         return M,F,MM
 
-    """
-    def calculate_MM(self, minimal_moles):
-
-        MM = {}
-
-        for item in minimal_moles.values():
-            for minimal in item:
-                for el in minimal:
-                    MM.setdefault(el, 0)
-
-        for p, item in minimal_moles.items():
-            for minimal in item:
-                for el in minimal:
-                    MM[el] += 1
-        return MM
-
-    """
     def suppress_MM(self,minimal_moles:dict, m,IL=None,MM=None ):
 
 

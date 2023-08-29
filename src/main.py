@@ -24,21 +24,20 @@ if __name__ == '__main__':
     start = time.time()
     minimal_moles,non_moles,MM = hkp.find_minimal_moles()
     IL = hkp.IL()
-    #vuoi cancellare tutto? fai questo
-    #hkp.suppress_MM(minimal_moles)
-    #print(f"ds is {ds.transactions}\n")
+    """
     if MM !={}:
        print(f"MM is {MM}")
 
     if IL!={}:
         print(f"IL is {IL}\n")
+    """
 
     #print(f"N^ of minimal moles are: {len(minimal_moles)}\n")
     #if there are Minimal moles
     if MM!={}:
         while all(len(values) > 0 for values in minimal_moles.values()):
              el=hkp.suppress_MM(minimal_moles,args.m,IL,MM)
-             print(f"Element(s) with max MM/IL: {el}\n")
+             print(f"Suppressing Item(s) with max MM/IL: {el}\n")
              minimal_moles, non_moles, MM = hkp.find_minimal_moles()
              IL = hkp.IL()
 
