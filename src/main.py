@@ -3,28 +3,32 @@ from HKP import HKP
 import logging
 import time
 from argparse import ArgumentParser
+import csv
+import os
 
 if __name__ == '__main__':
 
     # Parse the command line arguments
     parser = ArgumentParser(
         description='Using different options to anonymize the dataset, according to arguments passed by CLI')
+
+    # Add arguments for h, k, and p
+    parser.add_argument('--h', type=float, default=0.8, help='Specify the value for h')
+    parser.add_argument('--k', type=int, default=2, help='Specify the value for k')
+    parser.add_argument('--p', type=int, default=2, help='Specify the value for p')
+
     group = parser.add_mutually_exclusive_group(required=True)
-
-    # Opzione per specificare la tecnica per la rimozione degli elementi pubblici
     group.add_argument('-m', type=str, help='Specify technique for public item removal')
-
-    # Opzione per specificare il valore top_x
-    group.add_argument('-top_x', type=int, help='Specify the top_x value')
+    group.add_argument('-top_x', type=int, help='Specify how much top_x values wil be remove')
 
     args = parser.parse_args()
 
     logger = logging.getLogger("H-K-P")
     logging.basicConfig(level=logging.DEBUG)
-    ds = Dataset("../Datasets/Paper Example")
+    ds = Dataset("../Datasets/")
+    N_Pub_item_before=len(ds.public_items)
 
-    hkp = HKP(0.8,2,2,ds)
-
+    hkp = HKP(args.h,args.k,args.p,ds)
 
     start = time.time()
     minimal_moles,non_moles,MM = hkp.find_minimal_moles()
@@ -50,5 +54,37 @@ if __name__ == '__main__':
     ds.write_anonymized_ds([ds.public_transactions, ds.private_transactions])
     end=time.time()
     print(f"TOTAL TIME: {end-start} s")
+
+    #Utility Loss
+    N_Pub_item_After=len(ds.public_items)
+    Utility_loss=(N_Pub_item_After/N_Pub_item_before)*100
+
+    cwd = os.getcwd()
+    parent_dir = os.path.relpath(os.path.join(cwd, '../Datasets'))
+    folder = os.path.join(parent_dir, 'Performance')
+
+    #The performances will be written into a csv file
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    if args.m:
+        option = f"m-{args.m}"
+    elif args.top_x:
+        option = f"Top_x-{args.top_x}"
+    else:
+        option = "Option-Unknown"
+
+    data_to_write = [
+        [f"h: {args.h}"],
+        [f"k: {args.k}"],
+        [f"p: {args.p}"],
+        [f"Option: {option}"],
+        [f"TotalTime: {end - start}"],
+        [f"Utility Loss: {Utility_loss}"]
+    ]
+
+    with open(f'{folder}/{args.h}_{args.k}_{args.p}_{option}.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(data_to_write)
 
 

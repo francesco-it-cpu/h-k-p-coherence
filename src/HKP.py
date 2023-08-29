@@ -198,6 +198,15 @@ class HKP:
     # ------------ Size-n moles functions ending --------------
 
     def find_minimal_moles(self):
+        """
+        Calculate all the minimal_moles after called the 'eliminate_size1_moles' function
+        :return:
+        MM: a dictionary:
+            key: i-th public item inside the list of the minimal moles
+            value: the number of minimal moles containing the i-th public item
+        F: first of all contains the size_1 moles, after cicles will contain all the size-i non moles
+        M: all the minimal moles
+        """
 
         M = dict()
         F = dict()
@@ -239,6 +248,22 @@ class HKP:
         return M,F,MM
 
     def suppress_MM(self,minimal_moles:dict, m=None,top_x=None,IL=None,MM=None ):
+        """
+
+        :param minimal_moles: all the minimal moles
+        :param m: args passed through the command line
+        :param top_x: args passed through the command line
+        :param IL: A dictionary containing:
+                        key: i-th public item
+                        value: Sup of the i-th public item
+        :param MM: a dictionary:
+            key: i-th public item inside the list of the minimal moles
+            value: the number of minimal moles containing the i-th public item
+        :return: depends on the match:
+            top_x_elements: return each time the top x elements of the dictionary (from the max to the 'x', selected via cmd line by the user)
+            selected_elements: return each time the half size of the 'sorted_division' array
+            keys_with_max_value: return each time the max value of the 'sorted_division' array
+        """
 
         if m is None and top_x is not None:
             division = self.prepare_data(minimal_moles, MM, IL)
@@ -304,6 +329,12 @@ class HKP:
 
 
     def IL(self):
+        """
+        A function to calculate the IL for each remaining public item in the dataset
+        :return: a dictionary containing:
+                key: i-th public item
+                value: IL associated to the i-th public item
+        """
         dict_IL=defaultdict(int)
         for item in self.dataset.public_transactions:
             for el in item:
@@ -312,6 +343,19 @@ class HKP:
         return dict_IL
 
     def prepare_data(self,minimal_moles,MM,IL):
+        """
+        For each public item in the minimal moles, calculate MM/IL
+        :param minimal_moles:
+              :param IL: A dictionary containing:
+                        key: i-th public item
+                        value: Sup of the i-th public item
+        :param MM: a dictionary:
+            key: i-th public item inside the list of the minimal moles
+            value: the number of minimal moles containing the i-th public item
+        :return: a dictionary:
+                key: the i-th public item in the minimal moles array
+                value: the division associated to him
+        """
         division = defaultdict(int)
         single_mole = set()
         for p, item in minimal_moles.items():
