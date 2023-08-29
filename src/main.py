@@ -57,7 +57,9 @@ if __name__ == '__main__':
 
     #Utility Loss
     N_Pub_item_After=len(ds.public_items)
-    Utility_loss=(N_Pub_item_After/N_Pub_item_before)*100
+    Utility_loss=100-((N_Pub_item_After/N_Pub_item_before)*100)
+    print(f"After: {N_Pub_item_After}")
+    print(f"Before: {N_Pub_item_before}")
 
     cwd = os.getcwd()
     parent_dir = os.path.relpath(os.path.join(cwd, '../Datasets'))

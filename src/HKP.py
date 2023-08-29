@@ -293,7 +293,9 @@ class HKP:
 
                         cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
                         without_MM.append(cleaned_row)
+                        self.eliminate_size_1_moles(item_to_clean_from_transaction)
                         item_to_clean_from_transaction.clear()
+
                     self.dataset.public_transactions=[pub_trans for pub_trans in without_MM if pub_trans != frozenset()]
                     self.dataset.private_transactions=[priv_trans for idx, priv_trans in enumerate(self.dataset.private_transactions)
                                  if without_MM[idx] != frozenset()]
