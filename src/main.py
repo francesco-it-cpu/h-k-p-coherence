@@ -15,11 +15,10 @@ if __name__ == '__main__':
 
     logger = logging.getLogger("H-K-P")
     logging.basicConfig(level=logging.DEBUG)
-    ds = Dataset("../Datasets/Paper Example")
+    ds = Dataset("../Datasets/")
 
 
-    hkp = HKP(0.8,2,2,ds)
-
+    hkp = HKP(0.4,2,3,ds)
 
 
     start = time.time()
@@ -34,18 +33,15 @@ if __name__ == '__main__':
     if IL!={}:
         print(f"IL is {IL}\n")
 
-    print(f"minimal moles are: {minimal_moles}\n")
+    #print(f"N^ of minimal moles are: {len(minimal_moles)}\n")
     #if there are Minimal moles
     if MM!={}:
         while all(len(values) > 0 for values in minimal_moles.values()):
-             el=hkp.suppress_MM(minimal_moles,args,IL,MM)
+             el=hkp.suppress_MM(minimal_moles,args.m,IL,MM)
              print(f"Element(s) with max MM/IL: {el}\n")
              minimal_moles, non_moles, MM = hkp.find_minimal_moles()
              IL = hkp.IL()
 
-        print(f"AFTER ELIMINATION\n")
-        print(f"public_transactions are: {ds.public_transactions}")
-        print(f"public_items are: {ds.public_items}\n")
         #print(f"minimal moles are: {minimal_moles}\n")
     ds.write_anonymized_ds([ds.public_transactions, ds.private_transactions])
     end=time.time()

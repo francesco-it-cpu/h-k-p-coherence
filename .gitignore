@@ -8,6 +8,6 @@
 /dataSources.local.xml
 .DS_Store
 /.DS_Store
-!/Datasets/priv.dat
-!/Datasets/pub.dat
+!/Datasets/priv.csv
+!/Datasets/pub.csv
 !/.idea/

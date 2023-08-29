@@ -26,6 +26,6 @@ public_df = pd.DataFrame(public_data)
 private_df = pd.DataFrame(private_data)
 
 # Print the dataframes
-public_df.to_csv(f"./Datasets/pub.dat",sep=' ',index=False, header=False)
-private_df.to_csv(f"./Datasets/priv.dat",sep=' ',index=False, header=False)
+public_df.to_csv(f"./Datasets/pub.csv",sep=' ',index=False, header=False)
+private_df.to_csv(f"./Datasets/priv.csv",sep=' ',index=False, header=False)
 print("\nWrote everything to Datasets folder")
