@@ -167,7 +167,7 @@ class HKP:
     def get_moles(self,candidates,mole_list):
         """
         Find size-n moles based on the condition explained in the paper (either Sup(β)<k or Pbreach(β)>h)
-        :return: list of moles and non moles
+        :return: list of minimal moles and non moles
         """
         minimal_moles = set()
         non_moles = set()
@@ -194,7 +194,7 @@ class HKP:
 
     # ------------ Size-n moles functions ending --------------
 
-    def find_minimal_moles(self):
+    def find_minimal_moles(self,size_1_moles=None):
 
         M = dict()
         F = dict()
@@ -202,9 +202,6 @@ class HKP:
 
 
         i = 1
-        print(f"Searching for size-1 moles...")
-        size_1_moles = self.get_size1_moles()
-        print(f"Found {len(size_1_moles)} size-1 moles \n {size_1_moles}\n")
 
         F_i = self.eliminate_size_1_moles(size_1_moles)
         F[i] = F_i
@@ -263,7 +260,7 @@ class HKP:
             for p,moles in minimal_moles.items():
                 for mole in moles:
                     for el in mole:
-                        if set([el]).issubset(row):
+                        if set([el]).issubset(row) and el not in item_to_clean_from_transaction:
                             item_to_clean_from_transaction.append(el)
 
 
@@ -271,7 +268,10 @@ class HKP:
             without_MM.append(cleaned_row)
             item_to_clean_from_transaction.clear()
 
-        self.dataset.transactions = [pub_trans.union(priv_trans) for pub_trans,priv_trans in zip(without_MM,self.dataset.private_transactions)]
+
+        return [[pub_trans for pub_trans in without_MM if pub_trans != frozenset()],
+                 [priv_trans for idx,priv_trans in enumerate(self.dataset.private_transactions)
+                  if without_MM[idx] != frozenset()]]
 
 
     def IL(self):

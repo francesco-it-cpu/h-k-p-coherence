@@ -1,20 +1,20 @@
-import time
-
 from Dataset import Dataset
 from HKP import HKP
 import logging
+import time
 
 if __name__ == '__main__':
 
-    #logging.basicConfig(level=logging.DEBUG)
-    ds = Dataset("../Datasets/")
+    logger = logging.getLogger("H-K-P")
+    logging.basicConfig(level=logging.DEBUG)
+    ds = Dataset("../Datasets/Paper Example")
 
 
-    hkp = HKP(0.8,2,5,ds)
-    print("\n")
-    print(f"INITIALS public_transactions are: {ds.public_transactions}\n")
+    hkp = HKP(0.8,2,2,ds)
+
     start = time.time()
-    minimal_moles,non_moles,MM = hkp.find_minimal_moles()
+    size_1_moles = hkp.get_size1_moles()
+    minimal_moles,non_moles,MM = hkp.find_minimal_moles(size_1_moles)
     IL = hkp.IL()
     #vuoi cancellare tutto? fai questo
     #hkp.suppress_MM(minimal_moles)

@@ -1,4 +1,6 @@
 from pathlib import Path
+import os
+import csv
 
 class Dataset:
     def __init__(self, dataset_path):
@@ -19,7 +21,9 @@ class Dataset:
     def build_transactions(self):
         """
         Build transactions by reading each line of pub.dat and priv.dat
-        :return: A set of transactions
+        :return: A set of transactions,
+        pub_transactions: transactions only with public items
+        priv_transactions : transactions only with private items
         """
         public_list = open(self.dataset_path / "pub.dat").read().splitlines()
         private_list = open(self.dataset_path / "priv.dat").read().splitlines()
@@ -32,3 +36,20 @@ class Dataset:
 
         return transactions,pub_transactions,priv_transactions
 
+    @staticmethod
+    def write_anonymized_ds(transactions):
+        cwd = os.getcwd()
+        parent_dir = os.path.relpath(os.path.join(cwd, '../Datasets'))
+        folder = os.path.join(parent_dir, 'Anonymized')
+
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
+        with open(f'{folder}/anon_pub.dat', 'w') as anon_pub, open(f'{folder}/anon_priv.dat','w') as anon_priv:
+            pub_writer = csv.writer(anon_pub, delimiter=' ')
+            priv_writer = csv.writer(anon_priv, delimiter=' ')
+            for pub_sets,priv_sets in zip(transactions[0],transactions[1]):
+                pub_writer.writerow(pub_sets)
+                priv_writer.writerow(priv_sets)
+
+        print(f"Wrote anonymized datasets to {folder}")

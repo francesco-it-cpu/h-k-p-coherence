@@ -17,9 +17,9 @@ priv_cols = int(args.cols - pub_cols)
 print(f"Using density of {int(args.dens*100)}%")
 print(f"Generating pub.dat with {args.row} rows and {pub_cols} columns")
 # Generate random numbers between 1 and 300 for public and private datasets
-public_data = np.random.randint(low=1, high=300, size=(args.row, pub_cols))
+public_data = np.random.randint(low=1, high=799, size=(args.row, pub_cols))
 print(f"Generating priv.dat with {args.row} rows and {priv_cols} columns")
-private_data = np.random.randint(low=400, high=600, size=(args.row, priv_cols))
+private_data = np.random.randint(low=800, high=1000, size=(args.row, priv_cols))
 
 # Create pandas dataframes for public and private datasets
 public_df = pd.DataFrame(public_data)
