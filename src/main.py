@@ -79,7 +79,7 @@ if __name__ == '__main__':
         [f"k: {args.k}"],
         [f"p: {args.p}"],
         [f"Option: {option}"],
-        [f"TotalTime: {end - start}"],
+        [f"TotalTime: {end - start} s"],
         [f"Utility Loss: {Utility_loss}"]
     ]
 
