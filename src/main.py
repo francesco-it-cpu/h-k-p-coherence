@@ -51,7 +51,8 @@ if __name__ == '__main__':
              IL = hkp.IL()
 
         print(f"minimal moles are: {minimal_moles}\n")
-    ds.write_anonymized_ds([ds.public_transactions, ds.private_transactions])
+    #write the anonymization into a file
+    Num_pub_transactions=ds.write_anonymized_ds([ds.public_transactions, ds.private_transactions])
     end=time.time()
     print(f"TOTAL TIME: {end-start} s")
 
@@ -82,7 +83,8 @@ if __name__ == '__main__':
         [f"p: {args.p}"],
         [f"Option: {option}"],
         [f"TotalTime: {end - start} s"],
-        [f"Utility Loss: {Utility_loss}"]
+        [f"Utility Loss: {Utility_loss}"],
+        [f"Number of public transactions after anonymization: {Num_pub_transactions}"]
     ]
 
     with open(f'{folder}/{args.h}_{args.k}_{args.p}_{option}.csv', 'w', newline='') as file:

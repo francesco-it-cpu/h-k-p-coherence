@@ -53,3 +53,13 @@ class Dataset:
                 priv_writer.writerow(priv_sets)
 
         print(f"Wrote anonymized datasets to {folder}")
+
+        file_path = f'{folder}/anon_pub.csv'
+
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as file:
+                num_lines = sum(1 for line in file)
+        else:
+            num_lines = 0
+
+        return num_lines

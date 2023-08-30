@@ -293,7 +293,7 @@ class HKP:
 
                         cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
                         without_MM.append(cleaned_row)
-                        self.eliminate_size_1_moles(item_to_clean_from_transaction)
+                        self.eliminate_pub_item(item_to_clean_from_transaction)
                         item_to_clean_from_transaction.clear()
 
                     self.dataset.public_transactions=[pub_trans for pub_trans in without_MM if pub_trans != frozenset()]
@@ -369,3 +369,27 @@ class HKP:
             division[_item] = MM[_item] / IL[_item]
 
         return division
+
+    def eliminate_pub_item(self,items):
+
+        without_items = []
+        item_to_clean_from_transaction = []
+
+        for row in self.dataset.public_transactions:
+            for el in items:
+                if set([el]).issubset(row):
+                    item_to_clean_from_transaction.append(el)
+
+            if row.symmetric_difference(set(item_to_clean_from_transaction)) != frozenset():
+                cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
+                without_items.append(cleaned_row)
+            item_to_clean_from_transaction.clear()
+
+        symmetric_diff = self.dataset.public_items.symmetric_difference(frozenset(items))
+        cleaned_pub_items = symmetric_diff if symmetric_diff != frozenset() else None
+
+        if cleaned_pub_items is not None:
+            self.dataset.public_items = cleaned_pub_items
+
+        return cleaned_pub_items
+
