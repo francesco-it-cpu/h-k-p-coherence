@@ -1,6 +1,11 @@
 from pathlib import Path
 import os
 import csv
+import logging
+from pandas import DataFrame
+
+CWD = os.getcwd()
+PARENT_DIR = os.path.relpath(os.path.join(CWD, '../Datasets'))
 
 class Dataset:
     def __init__(self, dataset_path):
@@ -16,6 +21,9 @@ class Dataset:
 
         self.size_one_moles = list()
         self.minimal_moles = dict()
+
+        logger = logging.getLogger("HKP-Anonymizer")
+        self.logger = logger
 
 
     def build_transactions(self):
@@ -36,11 +44,9 @@ class Dataset:
 
         return transactions,pub_transactions,priv_transactions
 
-    @staticmethod
-    def write_anonymized_ds(transactions):
-        cwd = os.getcwd()
-        parent_dir = os.path.relpath(os.path.join(cwd, '../Datasets'))
-        folder = os.path.join(parent_dir, 'Anonymized')
+    def write_anonymized_ds(self,transactions):
+
+        folder = os.path.join(PARENT_DIR, 'Anonymized')
 
         if not os.path.exists(folder):
             os.makedirs(folder)
@@ -52,7 +58,7 @@ class Dataset:
                 pub_writer.writerow(pub_sets)
                 priv_writer.writerow(priv_sets)
 
-        print(f"Wrote anonymized datasets to {folder}")
+        self.logger.info(f"Wrote anonymized datasets to {folder}")
 
         file_path = f'{folder}/anon_pub.csv'
 
@@ -63,3 +69,17 @@ class Dataset:
             num_lines = 0
 
         return num_lines
+
+    def write_performances(self,data_to_write):
+        """
+
+        :param data_to_write: the dictionary object with parameters
+        :return:
+        """
+        if not os.path.isfile('performances.csv'):
+            DataFrame(data_to_write).to_csv(f'{PARENT_DIR}/performances.csv', mode='w', header=True)
+        else:  # else it exists so append without writing the header
+            DataFrame(data_to_write).to_csv(f'{PARENT_DIR}/performances.csv', mode='a', header=False)
+
+
+        self.logger.info(f"Performances written into {PARENT_DIR}/performances.csv")

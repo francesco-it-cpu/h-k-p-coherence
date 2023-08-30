@@ -1,6 +1,7 @@
 from Dataset import Dataset
 from collections import defaultdict
 from itertools import combinations
+import logging
 
 class HKP:
 
@@ -9,6 +10,9 @@ class HKP:
         self.k = k
         self.p = p
         self.dataset = dataset
+
+        logger = logging.getLogger("HKP-Anonymizer")
+        self.logger = logger
 
 
     # ------------ Size-1 moles functions --------------
@@ -97,12 +101,14 @@ class HKP:
             item_to_clean_from_transaction.clear()
 
         symmetric_diff = self.dataset.public_items.symmetric_difference(frozenset(size_1_moles_list))
-        cleaned_pub_items = symmetric_diff if symmetric_diff != frozenset() else None
+        cleaned_pub_items = symmetric_diff if symmetric_diff != frozenset() else set()
 
         if cleaned_pub_items is not None:
             self.dataset.public_items = cleaned_pub_items
         self.dataset.public_transactions = without_size1_moles
-        self.dataset.transactions = [pub_trans.union(priv_trans) for pub_trans,priv_trans in zip(without_size1_moles,self.dataset.private_transactions) if pub_trans!=frozenset()]
+        self.dataset.transactions = [pub_trans.union(priv_trans)
+                                     for pub_trans,priv_trans in zip(without_size1_moles,self.dataset.private_transactions)
+                                     if pub_trans!=frozenset()]
 
         return cleaned_pub_items
 
@@ -214,16 +220,22 @@ class HKP:
 
 
         i = 1
+
+        self.logger.info("Finding size one moles...\n")
         size_1_moles = self.get_size1_moles()
-        print(f"N^ of size-1-mole: {size_1_moles}")
+        self.logger.info(f"Found {len(size_1_moles)} -->> {size_1_moles}\n")
+
+        self.logger.info("Suppressing size-1 moles...\n")
         F_i = self.eliminate_size_1_moles(size_1_moles)
+        self.logger.info(f"Size-1 moles suppression completed\n")
+
         F[i] = F_i
 
         i = 2
 
         while i <= self.p:
             if F_i == set():
-                print(f"No size-{i} moles found\n")
+                self.logger.info(f"No size-{i} moles found")
                 break
             else:
                 C_i = self.create_combos(i,F_i)
@@ -239,10 +251,10 @@ class HKP:
 
                 # ------------------------------------------------------------------
                 if M_i == set():
-                    print(f"NO size-{i} moles found\n")
+                    self.logger.info(f"No size-{i} moles found\n")
                     break
 
-                print(f"Found {len(M[i])} size-{i} moles\n")
+                self.logger.info(f"Found {len(M[i])} size-{i} moles\n")
                 i+=1
 
         return M,F,MM
@@ -281,6 +293,7 @@ class HKP:
             match m:
                 case 'suppress-all':
                     without_MM = []
+                    pub_items_to_remove = set()
                     item_to_clean_from_transaction = []
 
                     for row in self.dataset.public_transactions:
@@ -289,15 +302,14 @@ class HKP:
                                 for el in mole:
                                     if set([el]).issubset(row) and el not in item_to_clean_from_transaction:
                                         item_to_clean_from_transaction.append(el)
+                                        pub_items_to_remove.add(el)
 
 
                         cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
                         without_MM.append(cleaned_row)
-                        print(f"BEFORE: {self.dataset.public_items} + DA ELIMINARE: {item_to_clean_from_transaction}")
-                        self.eliminate_pub_item(item_to_clean_from_transaction)
-                        print(f"AFTER: {self.dataset.public_items}")
                         item_to_clean_from_transaction.clear()
 
+                    self.dataset.public_items = self.dataset.public_items.symmetric_difference(pub_items_to_remove)
                     self.dataset.public_transactions=[pub_trans for pub_trans in without_MM if pub_trans != frozenset()]
                     self.dataset.private_transactions=[priv_trans for idx, priv_trans in enumerate(self.dataset.private_transactions)
                                  if without_MM[idx] != frozenset()]
@@ -319,6 +331,7 @@ class HKP:
                     return selected_elements
 
                 case 'only-max':
+
                     division = self.prepare_data(minimal_moles, MM, IL)
                     # Get only the Max element
                     max_value=max(division.values())
@@ -371,17 +384,4 @@ class HKP:
             division[_item] = MM[_item] / IL[_item]
 
         return division
-
-    def eliminate_pub_item(self,items):
-        print("SONO STATO CHIAMTAO")
-        without_items = []
-        item_to_clean_from_transaction = []
-        cleaned_pub_items = None
-
-        symmetric_diff = self.dataset.public_items.difference(frozenset(items))
-        if symmetric_diff != frozenset():
-            cleaned_pub_items = symmetric_diff
-            self.dataset.public_items = cleaned_pub_items
-
-        return cleaned_pub_items
 
