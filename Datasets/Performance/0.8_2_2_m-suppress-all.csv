@@ -2,6 +2,6 @@ h: 0.8
 k: 2
 p: 2
 Option: m-suppress-all
-TotalTime: 13.835222244262695 s
-Utility Loss: 47.491638795986624
+TotalTime: 0.005186319351196289 s
+Utility Loss: 88.88888888888889
 Number of public transactions after anonymization: 0

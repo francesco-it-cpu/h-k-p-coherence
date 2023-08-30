@@ -2,6 +2,6 @@ h: 0.8
 k: 2
 p: 2
 Option: m-half
-TotalTime: 9.068357944488525 s
-Utility Loss: 97.9933110367893
-Number of public transactions after anonymization: 140
+TotalTime: 0.005377531051635742 s
+Utility Loss: 66.66666666666667
+Number of public transactions after anonymization: 5

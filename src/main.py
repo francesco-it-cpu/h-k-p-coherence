@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     logger = logging.getLogger("H-K-P")
     logging.basicConfig(level=logging.DEBUG)
-    ds = Dataset("../Datasets/")
+    ds = Dataset("../Datasets/Paper Example")
     N_Pub_item_before=len(ds.public_items)
 
     hkp = HKP(args.h,args.k,args.p,ds)
@@ -42,6 +42,7 @@ if __name__ == '__main__':
     """
 
     print(f"minimal moles are: {minimal_moles}\n")
+    #print(f"minimal moles are: {len(minimal_moles)}\n")
     #if there are Minimal moles
     if MM!={}:
         while all(len(values) > 0 for values in minimal_moles.values()):
@@ -61,6 +62,7 @@ if __name__ == '__main__':
     Utility_loss=100-((N_Pub_item_After/N_Pub_item_before)*100)
     print(f"After: {N_Pub_item_After}")
     print(f"Before: {N_Pub_item_before}")
+    print(f"Public items: {ds.public_items}")
 
     cwd = os.getcwd()
     parent_dir = os.path.relpath(os.path.join(cwd, '../Datasets'))
