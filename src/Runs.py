@@ -8,11 +8,8 @@ from Calculator import Calculator
 
 if __name__ == '__main__':
 
-    logging.basicConfig(level=logging.DEBUG, format='%(name)s [%(levelname)s] >> %(message)s')
-    logger = logging.getLogger("HKP-Anonymizer")
-
-    h_values = [0.8, 0.4]
-    k_values = [2, 3, 4, 5, 6]
+    h_values = [0.4]
+    k_values = [10, 15, 20, 30, 40]
     p_values = [2, 3, 4, 5, 6]
     m_values=['half', 'suppress-all', 'only-max']
     top_x_values=None

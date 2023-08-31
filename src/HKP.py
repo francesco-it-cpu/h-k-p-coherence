@@ -11,8 +11,8 @@ class HKP:
         self.p = p
         self.dataset = dataset
 
-        logger = logging.getLogger("HKP-Anonymizer")
-        self.logger = logger
+        #logger = logging.getLogger("HKP-Anonymizer")
+        #self.logger = logger
 
 
     # ------------ Size-1 moles functions --------------
@@ -95,9 +95,9 @@ class HKP:
                 if set([el]).issubset(row):
                     item_to_clean_from_transaction.append(el)
 
-            if row.symmetric_difference(set(item_to_clean_from_transaction)) != frozenset():
-                cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
-                without_size1_moles.append(cleaned_row)
+
+            cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
+            without_size1_moles.append(cleaned_row)
             item_to_clean_from_transaction.clear()
 
         symmetric_diff = self.dataset.public_items.symmetric_difference(frozenset(size_1_moles_list))
@@ -106,6 +106,9 @@ class HKP:
         if cleaned_pub_items is not None:
             self.dataset.public_items = cleaned_pub_items
         self.dataset.public_transactions = without_size1_moles
+        self.dataset.private_transactions = [priv_trans for idx, priv_trans in
+                                             enumerate(self.dataset.private_transactions)
+                                             if without_size1_moles[idx] != frozenset()]
         self.dataset.transactions = [pub_trans.union(priv_trans)
                                      for pub_trans,priv_trans in zip(without_size1_moles,self.dataset.private_transactions)
                                      if pub_trans!=frozenset()]
@@ -221,13 +224,13 @@ class HKP:
 
         i = 1
 
-        self.logger.info("Finding size one moles...\n")
+        #self.logger.info("Finding size one moles...\n")
         size_1_moles = self.get_size1_moles()
-        self.logger.info(f"Found {len(size_1_moles)} -->> {size_1_moles}\n")
+        #self.logger.info(f"Found {len(size_1_moles)} -->> {size_1_moles}\n")
 
-        self.logger.info("Suppressing size-1 moles...\n")
+        #self.logger.info("Suppressing size-1 moles...\n")
         F_i = self.eliminate_size_1_moles(size_1_moles)
-        self.logger.info(f"Size-1 moles suppression completed\n")
+        #self.logger.info(f"Size-1 moles suppression completed\n")
 
         F[i] = F_i
 
@@ -235,7 +238,7 @@ class HKP:
 
         while i <= self.p:
             if F_i == set():
-                self.logger.info(f"No size-{i} moles found")
+                #self.logger.info(f"No size-{i} moles found")
                 break
             else:
                 C_i = self.create_combos(i,F_i)
@@ -251,10 +254,10 @@ class HKP:
 
                 # ------------------------------------------------------------------
                 if M_i == set():
-                    self.logger.info(f"No size-{i} moles found\n")
+                    #self.logger.info(f"No size-{i} moles found\n")
                     break
 
-                self.logger.info(f"Found {len(M[i])} size-{i} moles\n")
+                #self.logger.info(f"Found {len(M[i])} size-{i} moles\n")
                 i+=1
 
         return M,F,MM
@@ -287,7 +290,7 @@ class HKP:
             top_x_elements = [key for key, _ in sorted_division[:top_x]]
 
             self.eliminate_size_1_moles(top_x_elements)
-            self.logger.info(f"Suppressing Item(s) with max MM/IL: {top_x_elements}\n")
+            #self.logger.info(f"Suppressing Item(s) with max MM/IL: {top_x_elements}\n")
 
             return top_x_elements
 
@@ -328,7 +331,7 @@ class HKP:
                     else:
                         selected_elements = [key for key, _ in sorted_division[:num_elements // 2]]
 
-                    self.logger.info(f"Suppressing Item(s) with max MM/IL: {selected_elements}\n")
+                    #self.logger.info(f"Suppressing Item(s) with max MM/IL: {selected_elements}\n")
                     self.eliminate_size_1_moles(selected_elements)
 
                     return selected_elements
@@ -341,7 +344,7 @@ class HKP:
                     keys_with_max_value = [key for key, value in division.items() if value == max_value]
 
                     self.eliminate_size_1_moles(keys_with_max_value)
-                    self.logger.info(f"Suppressing Item(s) with max MM/IL: {keys_with_max_value}\n")
+                    #self.logger.info(f"Suppressing Item(s) with max MM/IL: {keys_with_max_value}\n")
 
                     return keys_with_max_value
 

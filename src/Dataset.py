@@ -22,8 +22,6 @@ class Dataset:
         self.size_one_moles = list()
         self.minimal_moles = dict()
 
-        logger = logging.getLogger("HKP-Anonymizer")
-        self.logger = logger
 
 
     def build_transactions(self):
@@ -58,7 +56,7 @@ class Dataset:
                 pub_writer.writerow(pub_sets)
                 priv_writer.writerow(priv_sets)
 
-        self.logger.info(f"Wrote anonymized datasets to {folder}")
+
 
         file_path = f'{folder}/anon_pub.csv'
 
@@ -80,7 +78,4 @@ class Dataset:
             DataFrame(data_to_write).to_csv(f'{PARENT_DIR}/performances.csv', mode='w', header=True)
         else:  # else it exists so append without writing the header
             DataFrame(data_to_write).to_csv(f'{PARENT_DIR}/performances.csv', mode='a', header=False)
-
-
-        self.logger.info(f"Performances written into {PARENT_DIR}/performances.csv")
 
