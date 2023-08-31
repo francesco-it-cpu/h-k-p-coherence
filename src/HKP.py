@@ -95,9 +95,9 @@ class HKP:
                 if set([el]).issubset(row):
                     item_to_clean_from_transaction.append(el)
 
-
-            cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
-            without_size1_moles.append(cleaned_row)
+            if row.symmetric_difference(set(item_to_clean_from_transaction)) != frozenset():
+                cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
+                without_size1_moles.append(cleaned_row)
             item_to_clean_from_transaction.clear()
 
         symmetric_diff = self.dataset.public_items.symmetric_difference(frozenset(size_1_moles_list))
@@ -106,10 +106,6 @@ class HKP:
         if cleaned_pub_items is not None:
             self.dataset.public_items = cleaned_pub_items
         self.dataset.public_transactions = without_size1_moles
-        self.dataset.private_transactions = [priv_trans for idx, priv_trans in
-                                             enumerate(self.dataset.private_transactions)
-                                             if without_size1_moles[idx] != []]
-
         self.dataset.transactions = [pub_trans.union(priv_trans)
                                      for pub_trans,priv_trans in zip(without_size1_moles,self.dataset.private_transactions)
                                      if pub_trans!=frozenset()]

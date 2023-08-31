@@ -26,22 +26,15 @@ if __name__ == '__main__':
     logger = logging.getLogger("HKP-Anonymizer")
 
     logger.debug("Loading Dataset...")
-    ds = Dataset("../Datasets/")
+    ds = Dataset("../Datasets")
     N_Pub_item_before = len(ds.public_items)
-    N_transactions=len(ds.transactions)
 
     hkp = HKP(args.h,args.k,args.p,ds)
 
     start = time.time()
     minimal_moles,non_moles,MM = hkp.find_minimal_moles()
     IL = hkp.IL()
-    """
-    if MM !={}:
-       print(f"MM is {MM}")
 
-    if IL!={}:
-        print(f"IL is {IL}\n")
-    """
     logger.info(f"minimal moles are: {minimal_moles}\n")
     #if there are Minimal moles
     if MM!={}:
@@ -81,8 +74,7 @@ if __name__ == '__main__':
         'option': option,
         'total_time' : end - start,
         'Utility Loss': Utility_loss,
-        'pub_trans after anonymization' : Num_pub_transactions,
-        'rows': N_transactions
+        'pub_trans after anonymization' : Num_pub_transactions
         }
     ]
 
