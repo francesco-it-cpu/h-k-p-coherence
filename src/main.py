@@ -26,7 +26,7 @@ if __name__ == '__main__':
     logger = logging.getLogger("HKP-Anonymizer")
 
     logger.debug("Loading Dataset...")
-    ds = Dataset("../Datasets/Paper Example")
+    ds = Dataset("../Datasets/")
     N_Pub_item_before = len(ds.public_items)
 
     hkp = HKP(args.h,args.k,args.p,ds)
