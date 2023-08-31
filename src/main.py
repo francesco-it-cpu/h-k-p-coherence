@@ -26,8 +26,9 @@ if __name__ == '__main__':
     logger = logging.getLogger("HKP-Anonymizer")
 
     logger.debug("Loading Dataset...")
-    ds = Dataset("../Datasets/Paper Example")
+    ds = Dataset("../Datasets/")
     N_Pub_item_before = len(ds.public_items)
+    N_transactions=len(ds.transactions)
 
     hkp = HKP(args.h,args.k,args.p,ds)
 
@@ -80,7 +81,8 @@ if __name__ == '__main__':
         'option': option,
         'total_time' : end - start,
         'Utility Loss': Utility_loss,
-        'pub_trans after anonymization' : Num_pub_transactions
+        'pub_trans after anonymization' : Num_pub_transactions,
+        'rows': N_transactions
         }
     ]
 
