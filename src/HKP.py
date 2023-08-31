@@ -285,7 +285,9 @@ class HKP:
             # Get the top 10 elements or all elements if there are fewer than 10
             sorted_division = sorted(division.items(), key=lambda x: x[1], reverse=True)
             top_x_elements = [key for key, _ in sorted_division[:top_x]]
+
             self.eliminate_size_1_moles(top_x_elements)
+            self.logger.info(f"Suppressing Item(s) with max MM/IL: {top_x_elements}\n")
 
             return top_x_elements
 
@@ -326,6 +328,7 @@ class HKP:
                     else:
                         selected_elements = [key for key, _ in sorted_division[:num_elements // 2]]
 
+                    self.logger.info(f"Suppressing Item(s) with max MM/IL: {selected_elements}\n")
                     self.eliminate_size_1_moles(selected_elements)
 
                     return selected_elements
@@ -336,7 +339,9 @@ class HKP:
                     # Get only the Max element
                     max_value=max(division.values())
                     keys_with_max_value = [key for key, value in division.items() if value == max_value]
+
                     self.eliminate_size_1_moles(keys_with_max_value)
+                    self.logger.info(f"Suppressing Item(s) with max MM/IL: {keys_with_max_value}\n")
 
                     return keys_with_max_value
 

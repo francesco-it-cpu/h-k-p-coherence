@@ -76,10 +76,11 @@ class Dataset:
         :param data_to_write: the dictionary object with parameters
         :return:
         """
-        if not os.path.isfile('performances.csv'):
+        if not os.path.isfile(f'{PARENT_DIR}/performances.csv'):
             DataFrame(data_to_write).to_csv(f'{PARENT_DIR}/performances.csv', mode='w', header=True)
         else:  # else it exists so append without writing the header
             DataFrame(data_to_write).to_csv(f'{PARENT_DIR}/performances.csv', mode='a', header=False)
 
 
         self.logger.info(f"Performances written into {PARENT_DIR}/performances.csv")
+

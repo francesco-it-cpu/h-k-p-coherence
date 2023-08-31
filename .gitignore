@@ -10,4 +10,5 @@
 /.DS_Store
 !/Datasets/priv.csv
 !/Datasets/pub.csv
-!/.idea/
+/.idea/
+src/__pycache__/

@@ -26,7 +26,7 @@ if __name__ == '__main__':
     logger = logging.getLogger("HKP-Anonymizer")
 
     logger.debug("Loading Dataset...")
-    ds = Dataset("../Datasets")
+    ds = Dataset("../Datasets/Paper Example")
     N_Pub_item_before = len(ds.public_items)
 
     hkp = HKP(args.h,args.k,args.p,ds)
@@ -41,15 +41,14 @@ if __name__ == '__main__':
     if IL!={}:
         print(f"IL is {IL}\n")
     """
-
     logger.info(f"minimal moles are: {minimal_moles}\n")
     #if there are Minimal moles
     if MM!={}:
-        while all(len(values) > 0 for values in minimal_moles.values()) and len(MM) != 0:
+        while len(MM) != 0:
              el=hkp.suppress_MM(minimal_moles,args.m,args.top_x,IL,MM)
-             logger.info(f"Suppressing Item(s) with max MM/IL: {el}\n")
              minimal_moles, non_moles, MM = hkp.find_minimal_moles()
-             IL = hkp.IL()
+             if len(MM) != 0:
+                IL = hkp.IL()
 
         logger.info(f"minimal moles are: {minimal_moles}\n")
 
