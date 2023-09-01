@@ -50,7 +50,7 @@ if __name__ == '__main__':
     logger.debug(f"TOTAL TIME: {end - start} s")
 
     #write the anonymization into a file
-    Num_pub_transactions=ds.write_anonymized_ds([ds.public_transactions, ds.private_transactions])
+    Num_pub_transactions=ds.write_anonymized_ds(ds.transactions)
 
     #Utility Loss
     N_Pub_item_After=len(ds.public_items)
@@ -74,10 +74,10 @@ if __name__ == '__main__':
         'option': option,
         'total_time' : end - start,
         'Utility Loss': Utility_loss,
-        'pub_trans after anonymization' : Num_pub_transactions
+        'pub_items_before' : N_Pub_item_before,
         }
     ]
 
-    #ds.write_performances(data_to_write)
+    ds.write_performances(data_to_write)
 
 

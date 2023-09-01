@@ -28,6 +28,7 @@ class HKP:
         for row in self.dataset.transactions:
             if beta.issubset(row) :
                 sup+=1
+
         return sup
 
     def build_size_1_dict(self):
@@ -56,7 +57,6 @@ class HKP:
                         if priv_item in row:
                             SupBeta_U_e_dict[beta][priv_item] += 1
 
-        self.il = SupBeta_dict
         return SupBeta_dict,SupBeta_U_e_dict
 
     def get_size1_moles(self):
@@ -87,17 +87,26 @@ class HKP:
         :param size_1_moles_list: got from get_size1_moles
         :return:
         """
-        without_size1_moles = []
-        item_to_clean_from_transaction = []
 
-        for row in self.dataset.public_transactions:
+        item_to_clean_from_transaction = []
+        transactions = self.dataset.transactions.copy()
+
+        for idx,row in enumerate(transactions):
             for el in size_1_moles_list:
                 if set([el]).issubset(row):
                     item_to_clean_from_transaction.append(el)
 
-
             cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
-            without_size1_moles.append(cleaned_row)
+
+            # If the len of sets is different, it means that pub_items were in cleaned_row and were excluded by the 'difference' operation
+            if len(cleaned_row) != len(cleaned_row.difference(self.dataset.public_items)):
+                self.dataset.transactions[idx] = cleaned_row
+            else:
+                print(idx)
+                self.dataset.transactions.append(self.dataset.transactions.pop(idx))
+                del(self.dataset.transactions[-1])
+
+
             item_to_clean_from_transaction.clear()
 
         symmetric_diff = self.dataset.public_items.symmetric_difference(frozenset(size_1_moles_list))
@@ -105,13 +114,8 @@ class HKP:
 
         if cleaned_pub_items is not None:
             self.dataset.public_items = cleaned_pub_items
-        self.dataset.public_transactions = without_size1_moles
-        self.dataset.private_transactions = [priv_trans for idx, priv_trans in
-                                             enumerate(self.dataset.private_transactions)
-                                             if without_size1_moles[idx] != frozenset()]
-        self.dataset.transactions = [pub_trans.union(priv_trans)
-                                     for pub_trans,priv_trans in zip(without_size1_moles,self.dataset.private_transactions)
-                                     if pub_trans!=frozenset()]
+
+
 
         return cleaned_pub_items
 
@@ -127,7 +131,7 @@ class HKP:
         :return: support of Beta
         """
         sup = 0
-        for row in self.dataset.public_transactions:
+        for row in self.dataset.transactions:
             if beta.issubset(row) :
                 sup+=1
         return sup
@@ -301,7 +305,7 @@ class HKP:
                     pub_items_to_remove = set()
                     item_to_clean_from_transaction = []
 
-                    for row in self.dataset.public_transactions:
+                    for idx,row in enumerate(self.dataset.transactions):
                         for p,moles in minimal_moles.items():
                             for mole in moles:
                                 for el in mole:
@@ -311,13 +315,14 @@ class HKP:
 
 
                         cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
-                        without_MM.append(cleaned_row)
+                        self.dataset.transactions[idx] = cleaned_row
+                        #without_MM.append(cleaned_row)
                         item_to_clean_from_transaction.clear()
 
                     self.dataset.public_items = self.dataset.public_items.symmetric_difference(pub_items_to_remove)
-                    self.dataset.public_transactions=[pub_trans for pub_trans in without_MM if pub_trans != frozenset()]
-                    self.dataset.private_transactions=[priv_trans for idx, priv_trans in enumerate(self.dataset.private_transactions)
-                                 if without_MM[idx] != frozenset()]
+                    #self.dataset.public_transactions=[pub_trans for pub_trans in without_MM if pub_trans != frozenset()]
+                    #self.dataset.private_transactions=[priv_trans for idx, priv_trans in enumerate(self.dataset.private_transactions)
+                    #             if without_MM[idx] != frozenset()]
 
                 case 'half':
 
@@ -361,9 +366,13 @@ class HKP:
                 value: IL associated to the i-th public item
         """
         dict_IL=defaultdict(int)
-        for item in self.dataset.public_transactions:
+        for item in self.dataset.transactions:
             for el in item:
-                dict_IL[el]=self.calculate_sup_size1_moles(el)
+                il = self.calculate_sup_size1_moles(el)
+                if il != 0:
+                    dict_IL[el]= il
+                else:
+                    continue
 
         return dict_IL
 
