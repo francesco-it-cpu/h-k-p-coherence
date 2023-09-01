@@ -49,12 +49,12 @@ class Dataset:
         if not os.path.exists(folder):
             os.makedirs(folder)
 
-        #with open(f'{folder}/anon_pub.csv', 'w') as anon_pub, open(f'{folder}/anon_priv.csv','w') as anon_priv:
         with open(f'{folder}/anonymized.csv','w') as anon:
             anon_writer = csv.writer(anon, delimiter=' ')
 
             for row in transactions:
-                anon_writer.writerow(sorted(row))
+                if row != frozenset():
+                    anon_writer.writerow(sorted(row))
 
 
 

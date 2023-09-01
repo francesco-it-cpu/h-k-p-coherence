@@ -89,6 +89,7 @@ class HKP:
         """
 
         item_to_clean_from_transaction = []
+        idx_to_remove = set()
 
         for idx,row in enumerate(self.dataset.transactions):
             for el in size_1_moles_list:
@@ -98,18 +99,17 @@ class HKP:
             cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
 
             # If the len of sets is different, it means that pub_items were in cleaned_row and were excluded by the 'difference' operation
-            if len(cleaned_row) != len(cleaned_row.difference(self.dataset.public_items)):
-                self.dataset.transactions[idx] = cleaned_row
+            if len(cleaned_row) == len(cleaned_row.difference(self.dataset.public_items)):
+                self.dataset.transactions[idx] = frozenset()
             else:
-                del(self.dataset.transactions[idx])
+                self.dataset.transactions[idx] = cleaned_row
 
             item_to_clean_from_transaction.clear()
 
+
         symmetric_diff = self.dataset.public_items.symmetric_difference(frozenset(size_1_moles_list))
         cleaned_pub_items = symmetric_diff if symmetric_diff != frozenset() else set()
-
-        if cleaned_pub_items is not None:
-            self.dataset.public_items = cleaned_pub_items
+        self.dataset.public_items = cleaned_pub_items
 
 
 
@@ -297,13 +297,16 @@ class HKP:
         else:
             match m:
                 case 'suppress-all':
-
-
+                    dio_maiale = set()
                     single_mole = set()
                     for p, item in minimal_moles.items():
                         for minimal in item:
                             for el in minimal:
                                 single_mole.add(el)
+
+
+                    for el in single_mole:
+                            dio_maiale.add(el)
 
                     self.eliminate_size_1_moles(single_mole)
 
@@ -349,13 +352,12 @@ class HKP:
                 value: IL associated to the i-th public item
         """
         dict_IL=defaultdict(int)
-        for item in self.dataset.transactions:
-            for el in item:
-                il = self.calculate_sup_size1_moles(el)
-                if il != 0:
-                    dict_IL[el]= il
-                else:
-                    continue
+        for item in self.dataset.public_items:
+            il = self.calculate_sup_size1_moles(item)
+            if il != 0:
+                dict_IL[item]= il
+            else:
+                continue
 
         return dict_IL
 
