@@ -89,9 +89,8 @@ class HKP:
         """
 
         item_to_clean_from_transaction = []
-        transactions = self.dataset.transactions.copy()
 
-        for idx,row in enumerate(transactions):
+        for idx,row in enumerate(self.dataset.transactions):
             for el in size_1_moles_list:
                 if set([el]).issubset(row):
                     item_to_clean_from_transaction.append(el)
@@ -102,10 +101,7 @@ class HKP:
             if len(cleaned_row) != len(cleaned_row.difference(self.dataset.public_items)):
                 self.dataset.transactions[idx] = cleaned_row
             else:
-                print(idx)
-                self.dataset.transactions.append(self.dataset.transactions.pop(idx))
-                del(self.dataset.transactions[-1])
-
+                del(self.dataset.transactions[idx])
 
             item_to_clean_from_transaction.clear()
 
