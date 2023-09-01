@@ -297,28 +297,15 @@ class HKP:
         else:
             match m:
                 case 'suppress-all':
-                    without_MM = []
-                    pub_items_to_remove = set()
-                    item_to_clean_from_transaction = []
-
-                    for idx,row in enumerate(self.dataset.transactions):
-                        for p,moles in minimal_moles.items():
-                            for mole in moles:
-                                for el in mole:
-                                    if set([el]).issubset(row) and el not in item_to_clean_from_transaction:
-                                        item_to_clean_from_transaction.append(el)
-                                        pub_items_to_remove.add(el)
 
 
-                        cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
-                        self.dataset.transactions[idx] = cleaned_row
-                        #without_MM.append(cleaned_row)
-                        item_to_clean_from_transaction.clear()
+                    single_mole = set()
+                    for p, item in minimal_moles.items():
+                        for minimal in item:
+                            for el in minimal:
+                                single_mole.add(el)
 
-                    self.dataset.public_items = self.dataset.public_items.symmetric_difference(pub_items_to_remove)
-                    #self.dataset.public_transactions=[pub_trans for pub_trans in without_MM if pub_trans != frozenset()]
-                    #self.dataset.private_transactions=[priv_trans for idx, priv_trans in enumerate(self.dataset.private_transactions)
-                    #             if without_MM[idx] != frozenset()]
+                    self.eliminate_size_1_moles(single_mole)
 
                 case 'half':
 

@@ -37,14 +37,12 @@ if __name__ == '__main__':
 
     logger.info(f"minimal moles are: {minimal_moles}\n")
     #if there are Minimal moles
-    if MM!={}:
-        while len(MM) != 0:
-             el=hkp.suppress_MM(minimal_moles,args.m,args.top_x,IL,MM)
-             minimal_moles, non_moles, MM = hkp.find_minimal_moles()
-             if len(MM) != 0:
-                IL = hkp.IL()
-
-        logger.info(f"minimal moles are: {minimal_moles}\n")
+    while len(MM) != 0:
+         el=hkp.suppress_MM(minimal_moles,args.m,args.top_x,IL,MM)
+         minimal_moles, non_moles, MM = hkp.find_minimal_moles()
+         if len(MM) != 0:
+            IL = hkp.IL()
+            logger.info(f"minimal moles are: {minimal_moles}\n")
 
     end = time.time()
     logger.debug(f"TOTAL TIME: {end - start} s")
@@ -55,8 +53,8 @@ if __name__ == '__main__':
     #Utility Loss
     N_Pub_item_After=len(ds.public_items)
     Utility_loss=100-((N_Pub_item_After/N_Pub_item_before)*100)
-    logger.info(f"After: {N_Pub_item_After}")
-    logger.info(f"Before: {N_Pub_item_before}")
+    logger.info(f"Public after anonymization: {N_Pub_item_After}")
+    logger.info(f"Public before anonymization: {N_Pub_item_before}")
 
     if args.m:
         option = f"m-{args.m}"
@@ -74,7 +72,7 @@ if __name__ == '__main__':
         'option': option,
         'total_time' : end - start,
         'Utility Loss': Utility_loss,
-        'pub_items_before' : N_Pub_item_before,
+        'Number of transactions' : Num_pub_transactions,
         }
     ]
 
