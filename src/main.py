@@ -76,6 +76,6 @@ if __name__ == '__main__':
         }
     ]
 
-    ds.write_performances(data_to_write)
+    #ds.write_performances(data_to_write)
 
 

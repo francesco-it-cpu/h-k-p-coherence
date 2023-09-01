@@ -8,15 +8,15 @@ class Calculator:
     @staticmethod
     def calculator(h:float,k:int,p:int,m=None,top_x=None):
 
-        ds = Dataset("../Datasets/")
+        ds = Dataset("../Datasets")
         N_Pub_item_before = len(ds.public_items)
 
         hkp = HKP(h, k, p, ds)
-        print(type(p))
 
         start = time.time()
         minimal_moles, non_moles, MM = hkp.find_minimal_moles()
         IL = hkp.IL()
+
 
         # if there are Minimal moles
         while len(MM) != 0:
@@ -24,7 +24,6 @@ class Calculator:
             minimal_moles, non_moles, MM = hkp.find_minimal_moles()
             if len(MM) != 0:
                 IL = hkp.IL()
-
 
         end = time.time()
 
@@ -42,17 +41,17 @@ class Calculator:
         else:
             option = "Option-Unknown"
 
-            # Prepare the object that will be converted to a Dataframe
-            data_to_write = [
-                {
-                    'h': h,
-                    'k': k,
-                    'p': p,
-                    'option': option,
-                    'total_time': end - start,
-                    'Utility Loss': Utility_loss,
-                    'Number of transactions': Num_pub_transactions,
-                }
-            ]
+        # Prepare the object that will be converted to a Dataframe
+        data_to_write = [
+            {
+                'h': h,
+                'k': k,
+                'p': p,
+                'option': option,
+                'total_time': end - start,
+                'Utility Loss': Utility_loss,
+                'Number of transactions': Num_pub_transactions,
+            }
+        ]
 
-            ds.write_performances(data_to_write)
+        ds.write_performances(data_to_write)
