@@ -18,7 +18,10 @@ if __name__ == '__main__':
     parser.add_argument('--p', type=int, default=2, help='Specify the value for p')
 
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-m', type=str,choices=['suppress-all','half'],help='suppress-all : suppress all public items in the minimal moles\nhalf : suppress half of the public items in the minimal moles based on max(MM/IL)')
+    group.add_argument('-m', type=str,choices=['suppress-all','half','only-max'],
+    help="""    suppress-all : suppress all public items in the minimal moles
+    half : suppress half of the public items in the minimal moles based on max(MM/IL)
+    only-max : suppress only the max(MM/IL) public items in the minimal moles till anonymization is reached""")
     group.add_argument('-top_x', type=int, help='\nSpecify how much top_x values wil be remove')
 
     args = parser.parse_args()
