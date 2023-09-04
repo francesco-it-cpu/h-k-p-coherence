@@ -37,6 +37,7 @@ if __name__ == '__main__':
     IL = hkp.IL()
 
     logger.info(f"minimal moles are: {minimal_moles}\n")
+    
     #if there are Minimal moles
     while len(MM) != 0:
          el=hkp.suppress_MM(minimal_moles,args.m,args.top_x,IL,MM)
