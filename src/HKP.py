@@ -297,16 +297,11 @@ class HKP:
         else:
             match m:
                 case 'suppress-all':
-                    dio_maiale = set()
                     single_mole = set()
                     for p, item in minimal_moles.items():
                         for minimal in item:
                             for el in minimal:
                                 single_mole.add(el)
-
-
-                    for el in single_mole:
-                            dio_maiale.add(el)
 
                     self.eliminate_size_1_moles(single_mole)
 
