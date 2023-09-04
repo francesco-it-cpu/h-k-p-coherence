@@ -3,11 +3,11 @@ Our implementation of h-k-p-Coherence anonymization algorithm described [here](h
 
 # Usage
 
-## Clone the repository 
+### Clone the repository 
 ```
 git clone https://github.com/francesco-it-cpu/h-k-p-coherence && cd h-k-p-coherence/src
 ```
-## Example
+### Example
 ```
 python3 main.py --h 0.4 --k 2 --p 2 -m half
 ```
