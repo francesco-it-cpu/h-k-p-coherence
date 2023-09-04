@@ -65,6 +65,7 @@ if __name__ == '__main__':
         option = "Option-Unknown"
 
     # Prepare the object that will be converted to a Dataframe
+    """
     data_to_write = [
         {
         'h': args.h,
@@ -77,6 +78,6 @@ if __name__ == '__main__':
         }
     ]
 
-    #ds.write_performances(data_to_write)
-
+    ds.write_performances(data_to_write)
+    """
 
