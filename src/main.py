@@ -2,14 +2,15 @@ from Dataset import Dataset
 from HKP import HKP
 import logging
 import time
-from argparse import ArgumentParser
+from argparse import ArgumentParser,RawTextHelpFormatter
 
 
 if __name__ == '__main__':
 
     # Parse the command line arguments
     parser = ArgumentParser(
-        description='Using different options to anonymize the dataset, according to arguments passed by CLI')
+        description='Using different options to anonymize the dataset, according to arguments passed by CLI',
+        formatter_class=RawTextHelpFormatter)
 
     # Add arguments for h, k, and p
     parser.add_argument('--h', type=float, default=0.8, help='Specify the value for h')
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('--p', type=int, default=2, help='Specify the value for p')
 
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-m', type=str, help='Specify technique for public item removal')
+    group.add_argument('-m', type=str,choices=['suppress-all','half'],help="""suppress-all : suppress all public items in the minimal moles\nhalf : suppress half of the public items in the minimal moles based on max(MM/IL)\n""")
     group.add_argument('-top_x', type=int, help='Specify how much top_x values wil be remove')
 
     args = parser.parse_args()

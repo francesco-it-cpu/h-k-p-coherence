@@ -13,9 +13,9 @@ python3 main.py --h 0.4 --k 2 --p 2 -m half
 ```
 There are different methods you can use to suppress minimal moles, either you can use -m and add one of these options
 - suppress-all : _suppress all public items that are contained in minimal moles_
-- half : suppress half of the public items based on max(MM/IL) condition
+- half : _suppress half of the public items based on max(MM/IL) condition_
 
-or you can use -top_x with a number (-top_x 10 for example) to suppress the top n public items always based on max(MM/IL)
+or you can use -top_x [n] (-top_x 10 for example) to suppress the top n public items always based on max(MM/IL)
 
 # Optional
 In addition you can generate new pub.csv and priv.csv using 
