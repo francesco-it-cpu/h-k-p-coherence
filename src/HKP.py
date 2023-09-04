@@ -62,7 +62,6 @@ class HKP:
     def get_size1_moles(self):
         """
         Find size-1 moles based on the condition explained in the paper (either Sup(β)<k or Pbreach(β)>h)
-
         :return: the list of size_1 moles
         """
         size_1_moles = set()
@@ -76,43 +75,28 @@ class HKP:
                size_1_moles.add(beta)
             else:
                 continue
-
         return frozenset(size_1_moles)
 
 
 
     def eliminate_size_1_moles(self, size_1_moles_list):
-        """
-        Eliminate size-1 moles and also update public items and transactions
-        :param size_1_moles_list: got from get_size1_moles
-        :return:
-        """
-
         item_to_clean_from_transaction = []
         idx_to_remove = set()
-
         for idx,row in enumerate(self.dataset.transactions):
             for el in size_1_moles_list:
                 if set([el]).issubset(row):
                     item_to_clean_from_transaction.append(el)
-
             cleaned_row = row.symmetric_difference(set(item_to_clean_from_transaction))
-
-            # If the len of sets is different, it means that pub_items were in cleaned_row and were excluded by the 'difference' operation
+            # If the len of sets is different, it means that pub_items were in cleaned_row and
+            #  were excluded by the 'difference' operation
             if len(cleaned_row) == len(cleaned_row.difference(self.dataset.public_items)):
                 self.dataset.transactions[idx] = frozenset()
             else:
                 self.dataset.transactions[idx] = cleaned_row
-
             item_to_clean_from_transaction.clear()
-
-
         symmetric_diff = self.dataset.public_items.symmetric_difference(frozenset(size_1_moles_list))
         cleaned_pub_items = symmetric_diff if symmetric_diff != frozenset() else set()
         self.dataset.public_items = cleaned_pub_items
-
-
-
         return cleaned_pub_items
 
     # ------------ Size-1 moles functions ending --------------
