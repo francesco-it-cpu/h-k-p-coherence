@@ -39,6 +39,7 @@ if __name__ == '__main__':
     #if there are Minimal moles
     while len(MM) != 0:
          el=hkp.suppress_MM(minimal_moles,args.m,args.top_x,IL,MM)
+         print(f"Suppressing item(s): {el}")
          minimal_moles, non_moles, MM = hkp.find_minimal_moles()
          if len(MM) != 0:
             IL = hkp.IL()
